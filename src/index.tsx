@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas } from '@react-three/fiber';
 import './index.css';
-// import App from './App';
 import { TestGLTFComponent } from './TestGLTFComponent';
 import reportWebVitals from './reportWebVitals';
 
