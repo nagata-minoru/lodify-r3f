@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Canvas } from '@react-three/fiber';
 import './index.css';
-import App from './App';
+// import App from './App';
+import { TestGLTFComponent } from './TestGLTFComponent';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
@@ -9,7 +11,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Canvas>
+      <TestGLTFComponent />
+    </Canvas>
   </React.StrictMode>
 );
 
