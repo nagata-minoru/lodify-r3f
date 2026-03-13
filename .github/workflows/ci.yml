@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: テスト & ビルド
+    name: テスト
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
