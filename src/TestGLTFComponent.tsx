@@ -9,14 +9,16 @@ export const TestGLTFComponent = () => {
   const [lowObj, setLowObj] = useState<Object3D>();
   useEffect(() => {
     (async () => {
-      // const filePath = "human_head.glb";
-      const filePath = "Box.glb";
+      const filePath = "human_head.glb";
+      // const filePath = "Box.glb";
+      // const filePath = "RiggedSimple.glb"
       const loadGlbModel = await MyGltfLoader({
         filePath: filePath,
         height: 1.5,
-        simModRatio: 0.9,
+        simModRatio: 0.001,
         shadows: true,
-        isWireFrame: true
+        isWireFrame: true,
+        maxIteration: 10
       });
       setGLTF(loadGlbModel.gltf);
       setLowObj(loadGlbModel.simModObj);

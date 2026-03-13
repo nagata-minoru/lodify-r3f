@@ -100,7 +100,19 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
    * @param geometry2
    * @returns
    */
-  const mergeBufferGeometry = (geometry1: BufferGeometry, geometry2: BufferGeometry): BufferGeometry => {
+  const mergeBufferGeometry = (geometry1: BufferGeometry, geometry2: BufferGeometry): BufferGeometry | undefined => {
+    // Check if geometry1 and its attributes are defined
+    if (!geometry1 || !geometry1.attributes || !geometry1.attributes.uv) {
+      console.error("geometry1 or its UV attributes are not defined:", geometry1);
+      return;
+    }
+
+    // Check if geometry2 and its attributes are defined
+    if (!geometry2 || !geometry2.attributes || !geometry2.attributes.uv) {
+      console.error("geometry2 or its UV attributes are not defined:", geometry2);
+      return;
+    }
+
     // 頂点属性のオフセット
     var offset = geometry1.attributes.position.count;
 
@@ -150,7 +162,7 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
   return new Promise((resolve) => {
 
     const loader = new GLTFLoader();
-    let geometry: BufferGeometry;
+    let geometry: BufferGeometry | undefined;
     loader.load(
       props.filePath,
       async (gltf: GLTF) => {
@@ -179,6 +191,7 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
             }
             else {
               geometry = mergeBufferGeometry(geometry, mesh.geometry.clone());
+              if (!geometry) throw 'cannot merge geometry.';
             }
             node.castShadow = props.shadows ? true : false;
             node.receiveShadow = props.shadows ? true : false;
@@ -208,10 +221,10 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
           // ※ジオメトリを統合しているので、正しいマテリアルを付与できない。どうすればいいか。
 
         }
-        myMesh.geometry = geometry;
+        myMesh.geometry = geometry!;
         var tempGeometry = new Mesh();
-        tempGeometry.geometry = geometry;
-        geometry.computeVertexNormals();
+        tempGeometry.geometry = geometry!;
+        geometry!.computeVertexNormals();
         myMesh.geometry.center();
         if (props.rotation) {
           myMesh.rotation.copy(props.rotation);
@@ -222,8 +235,8 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
         myMesh.geometry.computeBoundingBox();
         tempGeometry.position.copy(myMesh.position);
 
-        tempGeometry.geometry = modifier.modify(geometry, 0);
-        myMesh.geometry = modifier.modify(geometry, 0);
+        tempGeometry.geometry = modifier.modify(geometry!, 0);
+        myMesh.geometry = modifier.modify(geometry!, 0);
         console.log('変換前:頂点数:', ((myMesh.geometry.attributes.position.count * 6) - 12));
         console.log('変換前:三角数:', ((myMesh.geometry.attributes.position.count * 6) - 12) / 3);
 
