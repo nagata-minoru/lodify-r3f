@@ -1,46 +1,58 @@
-# Getting Started with Create React App
+# lodify-r3f
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+3DモデルのLOD（Level of Detail）化をブラウザ上でリアルタイムに確認できるデモアプリケーションです。
 
-## Available Scripts
+## 概要
 
-In the project directory, you can run:
+GLBファイルを読み込み、Three.jsの `SimplifyModifier` を使ってポリゴン削減を行い、元のモデルとLOD化済みモデルを並べて比較表示します。
 
-### `npm start`
+## デモ
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+https://nagata-minoru.github.io/lodify-r3f
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 技術スタック
 
-### `npm test`
+- React 18 + TypeScript
+- [@react-three/fiber](https://github.com/pmndrs/react-three-fiber) — Three.js の React バインディング
+- [@react-three/drei](https://github.com/pmndrs/drei) — 3D ヘルパーコンポーネント集
+- Three.js `SimplifyModifier` — ポリゴン削減
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 機能
 
-### `npm run build`
+- GLB形式の3Dモデルを読み込み
+- 指定した削減率（`simModRatio`）でポリゴンを段階的に削減
+- 元モデルとLOD化済みモデルを左右に並べて比較
+- ワイヤーフレーム表示オプション
+- 高さ自動スケール調整
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## セットアップ
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+[http://localhost:3000](http://localhost:3000) で起動します。
 
-### `npm run eject`
+## ビルド & デプロイ
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+# プロダクションビルド
+npm run build
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# GitHub Pages へデプロイ
+npm run deploy
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## `MyGltfLoader` の使い方
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```typescript
+MyGltfLoader({
+  filePath: "model.glb",   // public/ 以下のファイルパス
+  height: 1.5,             // モデルの高さ（省略時はリサイズなし）
+  simModRatio: 0.01,       // ポリゴン削減率 0〜1（小さいほど削減量が多い）
+  shadows: true,           // 影の有効化
+  isWireFrame: true,       // ワイヤーフレーム表示
+  maxIteration: 10,        // 1回の処理で削減する最大面数の上限ステップ数
+})
+```
