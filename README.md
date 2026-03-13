@@ -34,6 +34,35 @@ npm start
 
 [http://localhost:3000](http://localhost:3000) で起動します。
 
+## テスト
+
+```bash
+# 一回だけ実行して終了
+CI=true npm test
+
+# ウォッチモード（ファイル変更を監視して自動実行）
+npm test
+```
+
+ウォッチモードの主なキー操作:
+
+| キー | 動作 |
+|------|------|
+| `a` | 全テストを実行 |
+| `f` | 失敗したテストだけ再実行 |
+| `q` | 終了 |
+| `p` | ファイル名で絞り込み |
+| `t` | テスト名で絞り込み |
+
+### テストの内容
+
+`src/MyGltfLoader.test.ts` — `MyGltfLoader` 関数のユニットテスト
+
+- `gltf` と `simModObj` を含む結果を返すこと
+- `simModObj` の子に `Mesh` が含まれること
+- `onProgress` コールバックが 0〜100 の範囲で呼ばれること
+- `onProgress` を渡さなくてもエラーにならないこと
+
 ## ビルド & デプロイ
 
 ```bash
