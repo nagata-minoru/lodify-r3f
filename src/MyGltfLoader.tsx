@@ -22,6 +22,7 @@ export interface IGLTFLoaderProps {
   isWireFrame?: boolean;       // ワイヤーフレームにするか
   rotation?: Euler;       // 回転する場合に指定 デフォルトで 1/2πをX軸で回転
   maxIteration?: number;      // 一度に削減する数
+  onProgress?: (percentage: number) => void;
   onCallback?: (e?: any) => void;
 }
 
@@ -53,17 +54,13 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
    *　ベース：https://github.com/AndrewSink/3D-Low-Poly-Generator/tree/main
    * @param params
    */
-  const iterativeModifier = (params: IIterativeModParam): BufferGeometry => {
-    let modifierInProgress = true;
-    let modifierProgressPercentage = 0;
+  const iterativeModifier = async (params: IIterativeModParam): Promise<BufferGeometry> => {
     // 三角面数のカウント
     let startingFaceCount = params.geometry.attributes.position.count;
     // 現在の三角面数
     let currentFaceCount = startingFaceCount;
     // 変更後の三角面数
     let targetFaceCount = startingFaceCount - params.decimationFaceCount;
-    let totalFacesToDecimate = startingFaceCount - targetFaceCount;
-    let remainingFacesToDecimate = currentFaceCount - targetFaceCount;
 
     let iterationFaceCount = currentFaceCount - MAX_FACE_COUNT_PER_ITERATION;
 
@@ -73,8 +70,7 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
       if (params.updateCallback) params.updateCallback(simplifiedGeometry);
       currentFaceCount = simplifiedGeometry.attributes.position.count;
       iterationFaceCount = currentFaceCount - MAX_FACE_COUNT_PER_ITERATION;
-      remainingFacesToDecimate = currentFaceCount - targetFaceCount;
-      modifierProgressPercentage = Math.floor(((totalFacesToDecimate - remainingFacesToDecimate) / totalFacesToDecimate) * 100);
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
 
     try {
@@ -88,8 +84,6 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
     catch (e) { }
 
     if (params.updateCallback) params.updateCallback(simplifiedGeometry);
-    modifierProgressPercentage = 100;
-    modifierInProgress = false;
 
     return simplifiedGeometry;
   }
@@ -191,7 +185,7 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
             }
             else {
               geometry = mergeBufferGeometry(geometry, mesh.geometry.clone());
-              if (!geometry) throw 'cannot merge geometry.';
+              if (!geometry) throw new Error('cannot merge geometry.');
             }
             node.castShadow = props.shadows ? true : false;
             node.receiveShadow = props.shadows ? true : false;
@@ -243,9 +237,18 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
         const simModRate = props.simModRatio ? props.simModRatio : 0.5;
         const count = Math.floor(myMesh.geometry.attributes.position.count * simModRate);
         console.log("削減ポリゴン数: ", count);
-        const newGeometory = iterativeModifier({
+        const newGeometory = await iterativeModifier({
           decimationFaceCount: myMesh.geometry.attributes.position.count * simModRate,
-          geometry: myMesh.geometry
+          geometry: myMesh.geometry,
+          updateCallback: (geo) => {
+            if (!props.onProgress) return;
+            const current = geo.attributes.position.count;
+            const start = myMesh.geometry.attributes.position.count;
+            const target = Math.floor(start * (1 - simModRate));
+            const total = start - target;
+            const done = start - current;
+            props.onProgress(Math.min(100, Math.floor((done / total) * 100)));
+          }
         });
         myMesh.geometry = newGeometory;
         console.log('変換後:頂点数:', ((newGeometory.attributes.position.count * 6) - 12));
@@ -278,7 +281,7 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
       },
       (err: any) => {
         console.error("3Dモデルロード中にエラーが出ました");
-        throw "[モデルロードエラー]モデルのパスや設定を確認してください。";
+        throw new Error("[モデルロードエラー]モデルのパスや設定を確認してください。");
       }
     );
   });

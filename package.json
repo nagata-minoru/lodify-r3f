@@ -18,6 +18,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "postinstall": "cp node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs.map node_modules/@react-three/drei/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "PUBLIC_URL=/ react-scripts start",

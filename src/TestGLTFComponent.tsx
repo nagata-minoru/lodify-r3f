@@ -4,7 +4,11 @@ import { MyGltfLoader } from "./MyGltfLoader";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { Object3D } from "three";
 
-export const TestGLTFComponent = () => {
+interface ITestGLTFComponentProps {
+  onProgressChange?: (progress: number | null) => void;
+}
+
+export const TestGLTFComponent = ({ onProgressChange }: ITestGLTFComponentProps) => {
   const [gltf, setGLTF] = useState<GLTF>();
   const [lowObj, setLowObj] = useState<Object3D>();
   useEffect(() => {
@@ -12,18 +16,20 @@ export const TestGLTFComponent = () => {
       const filePath = "human_head.glb";
       // const filePath = "Box.glb";
       // const filePath = "RiggedSimple.glb"
+      onProgressChange?.(0);
       const loadGlbModel = await MyGltfLoader({
         filePath: filePath,
         height: 1.5,
-        simModRatio: 0.001,
+        simModRatio: 0.5,
         shadows: true,
         isWireFrame: true,
-        maxIteration: 10
+        onProgress: (p) => onProgressChange?.(p),
       });
+      onProgressChange?.(null);
       setGLTF(loadGlbModel.gltf);
       setLowObj(loadGlbModel.simModObj);
     })()
-  }, [])
+  }, [onProgressChange])
   return (
     <>
       {gltf &&
