@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/lodify-r3f/static/css/main.b33c757a.css",
-    "main.js": "/lodify-r3f/static/js/main.4c45cccf.js",
+    "main.css": "/lodify-r3f/static/css/main.1180b347.css",
+    "main.js": "/lodify-r3f/static/js/main.e9b68a0f.js",
     "static/js/453.2664de02.chunk.js": "/lodify-r3f/static/js/453.2664de02.chunk.js",
     "index.html": "/lodify-r3f/index.html",
-    "main.b33c757a.css.map": "/lodify-r3f/static/css/main.b33c757a.css.map",
-    "main.4c45cccf.js.map": "/lodify-r3f/static/js/main.4c45cccf.js.map",
+    "main.1180b347.css.map": "/lodify-r3f/static/css/main.1180b347.css.map",
+    "main.e9b68a0f.js.map": "/lodify-r3f/static/js/main.e9b68a0f.js.map",
     "453.2664de02.chunk.js.map": "/lodify-r3f/static/js/453.2664de02.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b33c757a.css",
-    "static/js/main.4c45cccf.js"
+    "static/css/main.1180b347.css",
+    "static/js/main.e9b68a0f.js"
   ]
 }
