@@ -11,8 +11,8 @@ import {
   Euler
 } from "three";
 
-import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import { SimplifyModifier } from "three/examples/jsm/modifiers/SimplifyModifier";
+import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { SimplifyModifier } from "three/examples/jsm/modifiers/SimplifyModifier.js";
 
 export interface IGLTFLoaderProps {
   filePath: string;      // ファイルパス

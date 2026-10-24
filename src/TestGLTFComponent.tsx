@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { OrbitControls, Environment } from "@react-three/drei";
 import { MyGltfLoader } from "./MyGltfLoader";
-import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D } from "three";
 
 interface ITestGLTFComponentProps {
