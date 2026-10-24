@@ -13,6 +13,8 @@ https://nagata-minoru.github.io/lodify-r3f
 ## 技術スタック
 
 - React 18 + TypeScript
+- [Vite](https://vite.dev/) — 開発サーバー・ビルド
+- [Vitest](https://vitest.dev/) — テスト
 - [@react-three/fiber](https://github.com/pmndrs/react-three-fiber) — Three.js の React バインディング
 - [@react-three/drei](https://github.com/pmndrs/drei) — 3D ヘルパーコンポーネント集
 - Three.js `SimplifyModifier` — ポリゴン削減

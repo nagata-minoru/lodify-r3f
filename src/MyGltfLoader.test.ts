@@ -30,7 +30,7 @@ function mockMakeGltf() {
   };
 }
 
-jest.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
+vi.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
   GLTFLoader: class {
     load(_path: string, onLoad: Function) {
       onLoad(mockMakeGltf());
@@ -38,7 +38,7 @@ jest.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
   },
 }));
 
-jest.mock('three/examples/jsm/modifiers/SimplifyModifier', () => ({
+vi.mock('three/examples/jsm/modifiers/SimplifyModifier.js', () => ({
   SimplifyModifier: class {
     modify(geo: BufferGeometry) {
       return geo.clone();
@@ -60,7 +60,7 @@ describe('MyGltfLoader', () => {
   });
 
   test('onProgress コールバックが呼ばれ、値が 0〜100 の範囲', async () => {
-    const onProgress = jest.fn();
+    const onProgress = vi.fn();
     await MyGltfLoader({ filePath: 'test.glb', onProgress });
     expect(onProgress).toHaveBeenCalled();
     for (const [value] of onProgress.mock.calls) {
