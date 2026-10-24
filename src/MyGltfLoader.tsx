@@ -13,6 +13,7 @@ import {
 
 import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { SimplifyModifier } from "three/examples/jsm/modifiers/SimplifyModifier.js";
+import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 export interface IGLTFLoaderProps {
   filePath: string;      // ファイルパス
@@ -51,6 +52,18 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
   const MAX_FACE_COUNT_PER_ITERATION = props.maxIteration ? props.maxIteration : 2500; // １度に処理する最大削減数
 
   /**
+   * 削減できるように、位置が同じ頂点を 1 つにまとめる
+   * 法線が三角形ごとに違うと頂点がつながらず、SimplifyModifier が辺を潰せないため、法線は外してから結合する
+   * @param geometry
+   * @returns
+   */
+  const weldGeometry = (geometry: BufferGeometry): BufferGeometry => {
+    const welded = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+    welded.deleteAttribute('normal');
+    return mergeVertices(welded);
+  }
+
+  /**
    *　ベース：https://github.com/AndrewSink/3D-Low-Poly-Generator/tree/main
    * @param params
    */
@@ -66,22 +79,24 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
 
     let simplifiedGeometry = params.geometry.clone();
     while (iterationFaceCount > targetFaceCount) {
-      simplifiedGeometry = modifier.modify(simplifiedGeometry, MAX_FACE_COUNT_PER_ITERATION);
+      simplifiedGeometry = await modifier.modify(simplifiedGeometry, MAX_FACE_COUNT_PER_ITERATION);
       if (params.updateCallback) params.updateCallback(simplifiedGeometry);
+      const previousFaceCount = currentFaceCount;
       currentFaceCount = simplifiedGeometry.attributes.position.count;
+      // SimplifyModifier は指定数ぴったりに削れるとは限らないので、減らなくなったら打ち切る
+      if (currentFaceCount >= previousFaceCount) break;
       iterationFaceCount = currentFaceCount - MAX_FACE_COUNT_PER_ITERATION;
       await new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    try {
-      let tmpGeo = simplifiedGeometry.clone();
-      tmpGeo = modifier.modify(tmpGeo, currentFaceCount - targetFaceCount);
-      if (tmpGeo.drawRange.count === Infinity) {
-        console.log("(Three.js) No Next Vertex Error: \n頂点検出エラーのため飛ばします");
+    if (currentFaceCount > targetFaceCount) {
+      try {
+        simplifiedGeometry = await modifier.modify(simplifiedGeometry, currentFaceCount - targetFaceCount);
       }
-      else simplifiedGeometry = tmpGeo
+      catch (e) {
+        console.log("(Three.js) SimplifyModifier Error: \n最後の削減に失敗したため飛ばします", e);
+      }
     }
-    catch (e) { }
 
     if (params.updateCallback) params.updateCallback(simplifiedGeometry);
 
@@ -229,8 +244,8 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
         myMesh.geometry.computeBoundingBox();
         tempGeometry.position.copy(myMesh.position);
 
-        tempGeometry.geometry = modifier.modify(geometry!, 0);
-        myMesh.geometry = modifier.modify(geometry!, 0);
+        tempGeometry.geometry = weldGeometry(geometry!);
+        myMesh.geometry = weldGeometry(geometry!);
         console.log('変換前:頂点数:', ((myMesh.geometry.attributes.position.count * 6) - 12));
         console.log('変換前:三角数:', ((myMesh.geometry.attributes.position.count * 6) - 12) / 3);
 
@@ -250,6 +265,8 @@ export const MyGltfLoader = async (props: IGLTFLoaderProps): Promise<IGLTFLoadDa
             props.onProgress(Math.min(100, Math.floor((done / total) * 100)));
           }
         });
+        // 結合のときに外した法線を付け直す
+        newGeometory.computeVertexNormals();
         myMesh.geometry = newGeometory;
         console.log('変換後:頂点数:', ((newGeometory.attributes.position.count * 6) - 12));
         console.log('変換後:三角数:', ((newGeometory.attributes.position.count * 6) - 12) / 3);

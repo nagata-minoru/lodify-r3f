@@ -40,7 +40,7 @@ vi.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
 
 vi.mock('three/examples/jsm/modifiers/SimplifyModifier.js', () => ({
   SimplifyModifier: class {
-    modify(geo: BufferGeometry) {
+    async modify(geo: BufferGeometry) {
       return geo.clone();
     }
   },
@@ -71,5 +71,10 @@ describe('MyGltfLoader', () => {
 
   test('onProgress を渡さなくてもエラーにならない', async () => {
     await expect(MyGltfLoader({ filePath: 'test.glb' })).resolves.toBeDefined();
+  });
+
+  test('頂点数が減らなくなってもループを抜けて完了する', async () => {
+    // モックの modify は頂点数を減らさないので、打ち切りがないと無限ループになる
+    await expect(MyGltfLoader({ filePath: 'test.glb', maxIteration: 1 })).resolves.toBeDefined();
   });
 });
