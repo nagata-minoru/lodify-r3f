@@ -9,6 +9,22 @@ updates:
       interval: weekly
     cooldown:
       default-days: 14
+    # React 19 への移行は関連パッケージをまとめて上げる必要があるので、メジャー更新は手動で行う
+    ignore:
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/react'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/react-dom'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@react-three/fiber'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@react-three/drei'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@testing-library/react'
+        update-types: [version-update:semver-major]
     groups:
       dependencies:
         patterns: ['*']
