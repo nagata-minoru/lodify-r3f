@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { Canvas } from '@react-three/fiber';
 import './index.css';
 import { TestGLTFComponent } from './TestGLTFComponent';
-import reportWebVitals from './reportWebVitals';
 
 const App = () => {
   const [progress, setProgress] = useState<number | null>(null);
@@ -33,5 +32,3 @@ root.render(
     <App />
   </React.StrictMode>
 );
-
-reportWebVitals();
