@@ -57,3 +57,23 @@ html, body, #root {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
 }
+
+.model-select {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.model-select select {
+  font-size: 14px;
+  padding: 2px 4px;
+}
