@@ -5,17 +5,17 @@ import { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D } from "three";
 
 interface ITestGLTFComponentProps {
+  filePath: string;
   onProgressChange?: (progress: number | null) => void;
 }
 
-export const TestGLTFComponent = ({ onProgressChange }: ITestGLTFComponentProps) => {
+export const TestGLTFComponent = ({ filePath, onProgressChange }: ITestGLTFComponentProps) => {
   const [gltf, setGLTF] = useState<GLTF>();
   const [lowObj, setLowObj] = useState<Object3D>();
   useEffect(() => {
+    // モデルが切り替わったら、前のモデルの処理結果と進捗は捨てる
+    let cancelled = false;
     (async () => {
-      const filePath = "human_head.glb";
-      // const filePath = "Box.glb";
-      // const filePath = "RiggedSimple.glb"
       onProgressChange?.(0);
       const loadGlbModel = await MyGltfLoader({
         filePath: filePath,
@@ -23,13 +23,19 @@ export const TestGLTFComponent = ({ onProgressChange }: ITestGLTFComponentProps)
         simModRatio: 0.5,
         shadows: true,
         isWireFrame: true,
-        onProgress: (p) => onProgressChange?.(p),
+        onProgress: (p) => {
+          if (!cancelled) onProgressChange?.(p);
+        },
       });
+      if (cancelled) return;
       onProgressChange?.(null);
       setGLTF(loadGlbModel.gltf);
       setLowObj(loadGlbModel.simModObj);
     })()
-  }, [onProgressChange])
+    return () => {
+      cancelled = true;
+    };
+  }, [filePath, onProgressChange])
   return (
     <>
       {gltf &&
