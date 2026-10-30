@@ -65,6 +65,18 @@ npm test
 - `onProgress` コールバックが 0〜100 の範囲で呼ばれること
 - `onProgress` を渡さなくてもエラーにならないこと
 
+`src/LoadingOverlay.test.tsx` — 進捗バー `LoadingOverlay` の表示テスト
+
+- `progress` が `null` のときは何も表示しないこと
+- 「処理中...」とパーセントが表示され、バーの幅が `progress` に一致すること
+- 0% と 100% でも表示されること
+
+`src/App.test.tsx` — `App` の画面テスト(jsdom には WebGL がないため、`Canvas` と 3D の中身は差し替えている)
+
+- 最初は進捗バーが表示されないこと
+- 読み込みの進捗が届くと、進捗バーに反映されること
+- `null` が届くと進捗バーが消えること
+
 ## ビルド & デプロイ
 
 ```bash
